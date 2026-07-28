@@ -168,8 +168,24 @@ input, select, textarea{ font: inherit; color: inherit; }
   height: 4px;
   color: var(--accent);
   margin-block: var(--sp-5);
+  transform-style: preserve-3d;
+  will-change: transform;
+  animation: stitchTurn 14s linear infinite;
 }
 .stitch-inline{ margin-inline: 0; }
+
+/* Slow, continuous 3D turn — the stitch reads as a thread of brass
+   catching the light as it rotates through the scene. Needs a
+   perspective context on the ancestor (set on .hero-inner /
+   .booking-intro below); fully stopped under reduced motion via the
+   global rule above. */
+@keyframes stitchTurn{
+  0%   { transform: rotateY(0deg) rotateZ(0deg); opacity: 1; }
+  25%  { transform: rotateY(90deg) rotateZ(1.5deg); opacity: 0.5; }
+  50%  { transform: rotateY(180deg) rotateZ(0deg); opacity: 1; }
+  75%  { transform: rotateY(270deg) rotateZ(-1.5deg); opacity: 0.5; }
+  100% { transform: rotateY(360deg) rotateZ(0deg); opacity: 1; }
+}
 
 /* ==========================================================================
    Buttons
@@ -291,13 +307,13 @@ input, select, textarea{ font: inherit; color: inherit; }
   overflow:hidden;
   padding-block: clamp(4.5rem, 10vw, 8rem) clamp(5rem, 11vw, 8.5rem);
 }
-.hero-bg{ position:absolute; inset:0; pointer-events:none; z-index:0; }
+.hero-bg{ position:absolute; inset:0; pointer-events:none; z-index:0; will-change: transform; }
 .hero-last{
   position:absolute; right: -6%; top:50%; transform: translateY(-50%);
   width: min(46vw, 560px); height:auto;
   color: var(--accent); opacity:0.16;
 }
-.hero-inner{ position:relative; z-index:1; max-width: 760px; }
+.hero-inner{ position:relative; z-index:1; max-width: 760px; perspective: 700px; }
 
 .eyebrow{
   font-size: var(--fs-sm); font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
@@ -398,6 +414,7 @@ section{ padding-block: var(--section-pad); }
   display:grid; grid-template-columns: repeat(3, 1fr);
   gap: var(--sp-5);
   margin-top: var(--sp-7);
+  perspective: 1400px;
 }
 .service-card{
   position:relative;
@@ -407,6 +424,8 @@ section{ padding-block: var(--section-pad); }
   border-radius: var(--radius-lg);
   padding: var(--sp-6) var(--sp-5);
   transition: border-color var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-standard);
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 .service-card:hover{ border-color: rgba(182,144,90,0.5); transform: translateY(-4px); }
 .service-card--signature{
@@ -414,16 +433,26 @@ section{ padding-block: var(--section-pad); }
   background: linear-gradient(160deg, var(--surface-dark) 0%, var(--c-graphite-700) 130%);
 }
 
-/* Signature interaction: patent-leather shine sweep on hover */
+/* Signature interaction: patent-leather shine sweep on hover.
+   Base transition (--dur-slow) drives the idle<->hover sweep for
+   touch/keyboard fallback; while JS is actively tilting the card
+   (.is-tilting) the shine gets a fast, near-linear transition so it
+   tracks the cursor instead of lagging behind. translateZ lifts the
+   shine into its own plane inside the card's preserve-3d space, so
+   it visually rides along with the 3D tilt rather than staying flat. */
 .service-shine{
   position:absolute; inset:0;
   background: linear-gradient(115deg, transparent 20%, rgba(var(--c-brass-glow, 182,144,90), 0.16) 45%, transparent 60%);
-  transform: translateX(-120%);
+  transform: translate3d(-120%, 0, 0);
+  transition: transform var(--dur-slow) var(--ease-standard);
   pointer-events:none;
+  will-change: transform;
 }
 .service-card:hover .service-shine{
-  transform: translateX(120%);
-  transition: transform var(--dur-slow) var(--ease-standard);
+  transform: translate3d(120%, 0, 0);
+}
+.service-card.is-tilting .service-shine{
+  transition: transform 90ms linear;
 }
 
 .service-icon{ width:44px; height:44px; color: var(--accent); margin-bottom: var(--sp-5); }
@@ -554,6 +583,7 @@ section{ padding-block: var(--section-pad); }
   display:grid; grid-template-columns: 1fr 1.1fr;
   gap: var(--sp-9);
 }
+.booking-intro{ perspective: 700px; }
 .booking-note{ color: var(--text-on-light-muted); font-size: var(--fs-sm); }
 .booking-note a{ color: var(--accent-on-light); font-weight:700; }
 

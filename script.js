@@ -3,6 +3,107 @@
 
   var WHATSAPP_NUMBER = "79037995036"; // +7 903 799-50-36, international format without symbols
 
+  var prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------------------------------------------------------------------
+     Service cards: full 3D tilt synced with the patent-leather shine
+     Perspective + preserve-3d live in CSS (.services-grid / .service-card).
+     Here we just read the cursor position and drive rotateX/rotateY plus
+     a matching translate on .service-shine so the highlight travels with
+     the tilt instead of just sweeping on a timer. Skipped entirely for
+     touch/coarse pointers (no meaningful hover) and under reduced motion.
+     --------------------------------------------------------------------- */
+  var supportsFineHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  if (!prefersReducedMotion && supportsFineHover) {
+    var MAX_TILT_DEG = 7;
+
+    document.querySelectorAll(".service-card").forEach(function (card) {
+      var shine = card.querySelector(".service-shine");
+      var rafId = null;
+      var pendingEvent = null;
+
+      var applyTilt = function () {
+        rafId = null;
+        if (!pendingEvent) { return; }
+
+        var rect = card.getBoundingClientRect();
+        var px = (pendingEvent.clientX - rect.left) / rect.width - 0.5;  // -0.5 .. 0.5
+        var py = (pendingEvent.clientY - rect.top) / rect.height - 0.5;  // -0.5 .. 0.5
+
+        var rotateY = px * 2 * MAX_TILT_DEG;
+        var rotateX = -(py * 2 * MAX_TILT_DEG);
+
+        card.style.transform =
+          "rotateX(" + rotateX.toFixed(2) + "deg) rotateY(" + rotateY.toFixed(2) + "deg) translateY(-6px)";
+
+        if (shine) {
+          var shineX = px * 240;        // -120% .. 120%, matches the CSS sweep range
+          var shineY = py * 40;         // small vertical drift
+          var shineTilt = rotateY * 0.6;
+          shine.style.transform =
+            "translate3d(" + shineX.toFixed(1) + "%, " + shineY.toFixed(1) + "%, 30px) rotate(" + shineTilt.toFixed(2) + "deg)";
+        }
+      };
+
+      card.addEventListener("mouseenter", function () {
+        card.classList.add("is-tilting");
+      });
+
+      card.addEventListener("mousemove", function (event) {
+        pendingEvent = event;
+        if (rafId === null) {
+          rafId = window.requestAnimationFrame(applyTilt);
+        }
+      });
+
+      card.addEventListener("mouseleave", function () {
+        if (rafId !== null) {
+          window.cancelAnimationFrame(rafId);
+          rafId = null;
+        }
+        pendingEvent = null;
+        card.classList.remove("is-tilting");
+        card.style.transform = "";
+        if (shine) { shine.style.transform = ""; }
+      });
+    });
+  }
+
+  /* ---------------------------------------------------------------------
+     Hero parallax: the decorative shoe-last outline drifts at a slower
+     rate than the page scroll (transform only, no background-attachment),
+     throttled with requestAnimationFrame and paused once the hero is out
+     of view. Disabled entirely under reduced motion.
+     --------------------------------------------------------------------- */
+  if (!prefersReducedMotion) {
+    var heroSection = document.querySelector(".hero");
+    var heroBg = document.querySelector(".hero-bg");
+
+    if (heroSection && heroBg) {
+      var PARALLAX_FACTOR = 0.18;
+      var PARALLAX_MAX = 70; // px, keeps the drift subtle on long scrolls
+      var parallaxTicking = false;
+
+      var updateParallax = function () {
+        parallaxTicking = false;
+        var rect = heroSection.getBoundingClientRect();
+        if (rect.bottom < 0 || rect.top > window.innerHeight) { return; }
+        var shift = Math.min(window.scrollY * PARALLAX_FACTOR, PARALLAX_MAX);
+        heroBg.style.transform = "translate3d(0, " + shift.toFixed(2) + "px, 0)";
+      };
+
+      window.addEventListener("scroll", function () {
+        if (!parallaxTicking) {
+          parallaxTicking = true;
+          window.requestAnimationFrame(updateParallax);
+        }
+      }, { passive: true });
+
+      updateParallax();
+    }
+  }
+
   /* ---------------------------------------------------------------------
      Mobile navigation toggle
      --------------------------------------------------------------------- */
