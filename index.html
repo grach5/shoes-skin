@@ -62,6 +62,8 @@
   <!-- HERO -->
   <section class="hero">
     <div class="hero-bg" aria-hidden="true">
+      <img class="hero-photo" src="https://images.unsplash.com/photo-1668069226492-508742b03147?q=80&amp;w=2000&amp;h=1250&amp;fit=crop&amp;auto=format" alt="" width="2000" height="1250" loading="eager" fetchpriority="high" decoding="async">
+      <div class="hero-scrim"></div>
       <svg class="hero-last" viewBox="0 0 400 400" aria-hidden="true" focusable="false">
         <path d="M60 300 C 40 260, 55 210, 95 190 C 120 178, 130 150, 150 120 C 168 92, 200 78, 235 82 C 275 87, 300 110, 315 145 C 328 175, 322 205, 305 225 C 330 235, 345 255, 340 278 C 334 305, 300 315, 260 313 L 100 313 C 78 313, 66 308, 60 300 Z" fill="none" stroke="currentColor" stroke-width="1.25"/>
       </svg>
@@ -139,6 +141,8 @@
 
       <div class="services-grid">
         <article class="service-card">
+          <img class="service-photo" src="https://images.pexels.com/photos/8899943/pexels-photo-8899943.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=900&amp;h=675&amp;fit=crop" alt="Мастер держит в руках кожаную туфлю перед началом химчистки" width="900" height="675" loading="lazy" decoding="async">
+          <div class="service-scrim" aria-hidden="true"></div>
           <div class="service-shine" aria-hidden="true"></div>
           <svg class="service-icon" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
             <path d="M6 34c0-6 4-10 10-12 3-1 5-3 6-6 2-5 8-8 14-6 4 1.5 7 5 7 10v6c0 3-2 5-5 5H10c-2 0-4-1-4-4z" fill="none" stroke="currentColor" stroke-width="1.5"/>
@@ -150,6 +154,8 @@
         </article>
 
         <article class="service-card">
+          <img class="service-photo" src="https://images.pexels.com/photos/13524876/pexels-photo-13524876.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=900&amp;h=675&amp;fit=crop" alt="Заготовки кожаной обуви и колодки на рабочем столе мастера во время реставрации" width="900" height="675" loading="lazy" decoding="async">
+          <div class="service-scrim" aria-hidden="true"></div>
           <div class="service-shine" aria-hidden="true"></div>
           <svg class="service-icon" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
             <path d="M8 30l6-14c2-4 6-6 10-6h6c5 0 9 4 9 9v9c0 3-2 6-5 7l-8 3H12c-3 0-5-3-4-6z" fill="none" stroke="currentColor" stroke-width="1.5"/>
@@ -161,6 +167,8 @@
         </article>
 
         <article class="service-card service-card--signature">
+          <img class="service-photo" src="https://images.pexels.com/photos/27035624/pexels-photo-27035624.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=900&amp;h=675&amp;fit=crop" alt="Глянцевая лакированная туфля с зеркальным блеском после реставрации" width="900" height="675" loading="lazy" decoding="async">
+          <div class="service-scrim" aria-hidden="true"></div>
           <div class="service-shine" aria-hidden="true"></div>
           <svg class="service-icon" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
             <path d="M7 32c0-7 5-11 12-13 4-1 6-4 7-7 2-6 9-8 15-5 4 2 6 6 6 11v7c0 3-2 6-5 6H12c-3 0-5-2-5-5z" fill="none" stroke="currentColor" stroke-width="1.5"/>
@@ -178,6 +186,26 @@
     </div>
   </section>
 
+  <!-- TRANSFORM: до/после -->
+  <section class="transform" id="transform">
+    <div class="wrap">
+      <p class="section-eyebrow section-eyebrow--light">Результат</p>
+      <h2 class="section-title section-title--light">Видно с&nbsp;первого взгляда</h2>
+      <p class="section-lede">Одна и та же пара — до обращения к мастеру и после. Долистайте до этого блока ещё раз, чтобы увидеть превращение снова.</p>
+
+      <div class="reveal" id="revealDemo">
+        <img class="reveal-img" src="https://images.pexels.com/photos/32142573/pexels-photo-32142573.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1200&amp;h=900&amp;fit=crop" alt="Кожаная туфля с потёртостями и матовым тусклым покрытием — состояние до профессионального ухода" width="1200" height="900" loading="lazy" decoding="async">
+        <div class="reveal-after">
+          <img class="reveal-img" src="https://images.pexels.com/photos/4161710/pexels-photo-4161710.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1200&amp;h=900&amp;fit=crop" alt="Та же модель туфли с глубоким зеркальным блеском кожи — результат профессиональной чистки и полировки" width="1200" height="900" loading="lazy" decoding="async">
+          <div class="reveal-sheen" aria-hidden="true"></div>
+        </div>
+        <div class="reveal-edge" aria-hidden="true"></div>
+        <span class="reveal-tag reveal-tag--before">До</span>
+        <span class="reveal-tag reveal-tag--after">После</span>
+      </div>
+    </div>
+  </section>
+
   <!-- GALLERY -->
   <section class="gallery" id="gallery">
     <div class="wrap">
@@ -186,21 +214,34 @@
 
       <div class="gallery-grid">
         <figure class="gallery-tile tile-smooth">
+          <img class="tile-photo" src="https://images.unsplash.com/photo-1571829604981-ea159f94e5ad?q=80&amp;w=700&amp;h=525&amp;fit=crop&amp;auto=format" alt="Гладкая кожа туфли крупным планом — естественная фактура и глубокий цвет материала" width="700" height="525" loading="lazy" decoding="async">
+          <div class="tile-scrim" aria-hidden="true"></div>
           <span class="tile-caption">Гладкая кожа</span>
         </figure>
         <figure class="gallery-tile tile-suede">
+          <img class="tile-photo" src="https://images.pexels.com/photos/15127337/pexels-photo-15127337.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=700&amp;h=525&amp;fit=crop" alt="Замшевые лоферы — материал с бархатистой матовой фактурой" width="700" height="525" loading="lazy" decoding="async">
+          <div class="tile-scrim" aria-hidden="true"></div>
           <span class="tile-caption">Замша и нубук</span>
         </figure>
         <figure class="gallery-tile tile-patent">
+          <img class="tile-photo" src="https://images.pexels.com/photos/5383294/pexels-photo-5383294.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=700&amp;h=525&amp;fit=crop" alt="Лакированная чёрная туфля с зеркальным глянцевым покрытием" width="700" height="525" loading="lazy" decoding="async">
+          <div class="tile-scrim" aria-hidden="true"></div>
+          <div class="tile-shine" aria-hidden="true"></div>
           <span class="tile-caption">Лакированная кожа</span>
         </figure>
         <figure class="gallery-tile tile-exotic">
+          <img class="tile-photo" src="https://images.pexels.com/photos/27127374/pexels-photo-27127374.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=700&amp;h=525&amp;fit=crop" alt="Лоферы из кожи крокодила — экзотическая кожа с выраженной чешуйчатой текстурой" width="700" height="525" loading="lazy" decoding="async">
+          <div class="tile-scrim" aria-hidden="true"></div>
           <span class="tile-caption">Экзотические кожи</span>
         </figure>
         <figure class="gallery-tile tile-hardware">
+          <img class="tile-photo" src="https://images.pexels.com/photos/35392706/pexels-photo-35392706.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=700&amp;h=525&amp;fit=crop" alt="Латунная фурнитура и пряжка на кожаном изделии премиального класса" width="700" height="525" loading="lazy" decoding="async">
+          <div class="tile-scrim" aria-hidden="true"></div>
           <span class="tile-caption">Фурнитура и подошва</span>
         </figure>
         <figure class="gallery-tile tile-wood">
+          <img class="tile-photo" src="https://images.pexels.com/photos/35240765/pexels-photo-35240765.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=700&amp;h=525&amp;fit=crop" alt="Деревянные колодки для обуви — уход, сохраняющий форму и кожу" width="700" height="525" loading="lazy" decoding="async">
+          <div class="tile-scrim" aria-hidden="true"></div>
           <span class="tile-caption">Колодки и уход</span>
         </figure>
       </div>

@@ -308,10 +308,23 @@ input, select, textarea{ font: inherit; color: inherit; }
   padding-block: clamp(4.5rem, 10vw, 8rem) clamp(5rem, 11vw, 8.5rem);
 }
 .hero-bg{ position:absolute; inset:0; pointer-events:none; z-index:0; will-change: transform; }
+.hero-photo{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit: cover;
+  object-position: 72% 38%;
+  filter: grayscale(0.32) contrast(1.08) brightness(0.8);
+}
+.hero-scrim{
+  position:absolute; inset:0;
+  background:
+    radial-gradient(60% 70% at 88% 12%, rgba(var(--c-brass-glow),0.18), transparent 60%),
+    linear-gradient(100deg, var(--bg-dark) 0%, rgba(23,21,18,0.95) 25%, rgba(23,21,18,0.6) 52%, rgba(18,17,16,0.4) 78%, rgba(18,17,16,0.68) 100%);
+}
 .hero-last{
   position:absolute; right: -6%; top:50%; transform: translateY(-50%);
   width: min(46vw, 560px); height:auto;
-  color: var(--accent); opacity:0.16;
+  color: var(--accent); opacity:0.22;
 }
 .hero-inner{ position:relative; z-index:1; max-width: 760px; perspective: 700px; }
 
@@ -433,16 +446,42 @@ section{ padding-block: var(--section-pad); }
   background: linear-gradient(160deg, var(--surface-dark) 0%, var(--c-graphite-700) 130%);
 }
 
-/* Signature interaction: patent-leather shine sweep on hover.
-   Base transition (--dur-slow) drives the idle<->hover sweep for
-   touch/keyboard fallback; while JS is actively tilting the card
-   (.is-tilting) the shine gets a fast, near-linear transition so it
-   tracks the cursor instead of lagging behind. translateZ lifts the
-   shine into its own plane inside the card's preserve-3d space, so
-   it visually rides along with the 3D tilt rather than staying flat. */
+/* Real photo fills the card behind the copy. Negative z-index keeps
+   both layers pinned under the static (non-positioned) icon/heading/
+   paragraph text — .service-card creates its own stacking context via
+   will-change:transform, so this stays scoped to the card and can't
+   leak behind neighbouring cards or the section background. The scrim
+   is a plain dark gradient (no blur) so it darkens the photo enough
+   for AA text contrast without reading as glassmorphism. */
+.service-photo{
+  position:absolute; inset:0;
+  z-index:-2;
+  width:100%; height:100%;
+  object-fit: cover;
+  filter: grayscale(0.12) contrast(1.05) brightness(0.88);
+  transition: transform var(--dur-slow) var(--ease-standard);
+}
+.service-card:hover .service-photo,
+.service-card.is-tilting .service-photo{
+  transform: scale(1.045);
+}
+.service-scrim{
+  position:absolute; inset:0;
+  z-index:-1;
+  background: linear-gradient(178deg, rgba(18,17,16,0.16) 0%, rgba(18,17,16,0.84) 56%, var(--surface-dark) 96%);
+}
+
+/* Signature interaction: patent-leather shine sweep on hover, now
+   riding over the real photo. Base transition (--dur-slow) drives the
+   idle<->hover sweep for touch/keyboard fallback; while JS is actively
+   tilting the card (.is-tilting) the shine gets a fast, near-linear
+   transition so it tracks the cursor instead of lagging behind.
+   mix-blend-mode:screen makes the sweep read as a genuine specular
+   highlight glancing off the leather rather than a flat tint. */
 .service-shine{
   position:absolute; inset:0;
-  background: linear-gradient(115deg, transparent 20%, rgba(var(--c-brass-glow, 182,144,90), 0.16) 45%, transparent 60%);
+  background: linear-gradient(115deg, transparent 28%, rgba(255,255,255,0.4) 47%, rgba(var(--c-brass-glow, 182,144,90), 0.4) 53%, transparent 72%);
+  mix-blend-mode: screen;
   transform: translate3d(-120%, 0, 0);
   transition: transform var(--dur-slow) var(--ease-standard);
   pointer-events:none;
@@ -476,7 +515,88 @@ section{ padding-block: var(--section-pad); }
 }
 
 /* ==========================================================================
-   Gallery — CSS-crafted material swatches (no stock photography)
+   Transform — before/after clip-path wipe reveal
+   ========================================================================== */
+.transform{ background: var(--bg-dark-alt); color: var(--text-on-dark); }
+.transform .section-lede{ color: var(--text-on-dark-muted); }
+
+.reveal{
+  position: relative;
+  margin-top: var(--sp-8);
+  max-width: 720px;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lift);
+  border: 1px solid var(--surface-dark-line);
+}
+.reveal-img{
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+/* The "after" photo starts fully clipped away (inset from the right)
+   and wipes open left-to-right once the block enters the viewport
+   (see script.js, .is-revealed toggled via IntersectionObserver). The
+   "before" photo sits underneath and shows through wherever the clip
+   hasn't opened yet — no JS-driven layout math needed, clip-path does
+   the work. Transition duration is crushed to ~0 globally under
+   prefers-reduced-motion, so the reveal snaps to its final state
+   instead of animating. */
+.reveal-after{
+  position: absolute; inset: 0;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 1.7s var(--ease-standard);
+  will-change: clip-path;
+}
+.reveal.is-revealed .reveal-after{
+  clip-path: inset(0 0 0 0);
+}
+
+/* A glossy sheen rides along with the wipe edge — the same "shine
+   sweep" language used on the service cards and the patent-leather
+   gallery tile, here dramatizing the exact moment the polish reveals
+   itself. mix-blend-mode keeps it reading as a light glint, not a flat
+   overlay. */
+.reveal-sheen{
+  position: absolute; inset: 0;
+  background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.45) 50%, rgba(var(--c-brass-glow),0.35) 56%, transparent 74%);
+  mix-blend-mode: screen;
+  transform: translate3d(-130%, 0, 0);
+  transition: transform 1.7s var(--ease-standard);
+  pointer-events: none;
+}
+.reveal.is-revealed .reveal-sheen{
+  transform: translate3d(130%, 0, 0);
+}
+
+.reveal-edge{
+  position: absolute; top:0; bottom:0; left:0;
+  width: 3px;
+  background: linear-gradient(180deg, transparent, var(--accent-strong), transparent);
+  box-shadow: 0 0 24px 2px rgba(var(--c-brass-glow),0.75);
+  transition: left 1.7s var(--ease-standard);
+  z-index: 2;
+  pointer-events: none;
+}
+.reveal.is-revealed .reveal-edge{ left: 100%; }
+
+.reveal-tag{
+  position: absolute; top: var(--sp-4);
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-xs); font-weight:700; letter-spacing:0.04em; text-transform:uppercase;
+  background: rgba(18,17,16,0.72);
+  border: 1px solid rgba(var(--c-brass-glow),0.5);
+  color: var(--c-bone-100);
+  z-index: 3;
+}
+.reveal-tag--before{ left: var(--sp-4); }
+.reveal-tag--after{ right: var(--sp-4); color: var(--accent-strong); }
+
+/* ==========================================================================
+   Gallery — real material photography
    ========================================================================== */
 .gallery{ background: var(--bg-light); }
 .gallery-grid{
@@ -493,6 +613,22 @@ section{ padding-block: var(--section-pad); }
   display:flex; align-items:flex-end;
   box-shadow: var(--shadow-soft);
 }
+.tile-photo{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit:cover;
+  transition: transform var(--dur-slow) var(--ease-standard);
+}
+.gallery-tile:hover .tile-photo{ transform: scale(1.05); }
+
+/* Scrim keeps the caption legible over any photo without blur — a
+   plain dark gradient, not glassmorphism. .tile-caption already has
+   position:relative + z-index:2 so it paints above the photo/scrim
+   (both z-index:auto) regardless of DOM order. */
+.tile-scrim{
+  position:absolute; inset:0;
+  background: linear-gradient(180deg, rgba(18,17,16,0) 42%, rgba(18,17,16,0.85) 100%);
+}
 .tile-caption{
   position:relative; z-index:2;
   padding: var(--sp-4);
@@ -501,44 +637,20 @@ section{ padding-block: var(--section-pad); }
   text-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
-.tile-smooth{
-  background:
-    repeating-linear-gradient(100deg, rgba(0,0,0,0.05) 0 2px, transparent 2px 6px),
-    linear-gradient(135deg, #3a2e22, #1c150f 70%);
-}
-.tile-suede{
-  background:
-    radial-gradient(120% 90% at 30% 20%, rgba(255,255,255,0.06), transparent 60%),
-    linear-gradient(160deg, #4a3f45, #221d21 75%);
-}
-.tile-patent{
-  background: linear-gradient(120deg, #0d0d0d 0%, #2a2a2a 35%, #726144 48%, #0d0d0d 60%, #262626 100%);
+/* Signature patent-leather shine, carried over from the CSS-swatch
+   version and now sweeping across the real lacquered-leather photo. */
+.tile-shine{
+  position:absolute; inset:0;
+  z-index:2;
+  background: linear-gradient(120deg, transparent 32%, rgba(255,255,255,0.4) 48%, rgba(var(--c-brass-glow),0.4) 54%, transparent 70%);
   background-size: 220% 220%;
+  mix-blend-mode: screen;
   animation: patentShine 7s ease-in-out infinite;
+  pointer-events:none;
 }
 @keyframes patentShine{
   0%,100%{ background-position: 0% 50%; }
   50%{ background-position: 100% 50%; }
-}
-.tile-exotic{
-  background:
-    radial-gradient(circle at 15% 20%, rgba(0,0,0,0.35) 0 6px, transparent 7px),
-    radial-gradient(circle at 45% 55%, rgba(0,0,0,0.35) 0 6px, transparent 7px),
-    radial-gradient(circle at 75% 25%, rgba(0,0,0,0.35) 0 6px, transparent 7px),
-    radial-gradient(circle at 25% 80%, rgba(0,0,0,0.35) 0 6px, transparent 7px),
-    radial-gradient(circle at 65% 75%, rgba(0,0,0,0.35) 0 6px, transparent 7px),
-    linear-gradient(150deg, #4f3a28, #241a10 75%);
-  background-size: 60px 60px, 60px 60px, 60px 60px, 60px 60px, 60px 60px, cover;
-}
-.tile-hardware{
-  background:
-    linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.35) 48%, transparent 56%),
-    linear-gradient(160deg, var(--c-brass-400), var(--c-brass-600) 60%, #3a2c18 100%);
-}
-.tile-wood{
-  background:
-    repeating-linear-gradient(90deg, rgba(0,0,0,0.08) 0 3px, transparent 3px 22px),
-    linear-gradient(160deg, #5a3e26, #2b1b0f 80%);
 }
 
 @media (max-width: 780px){

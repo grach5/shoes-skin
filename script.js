@@ -105,6 +105,34 @@
   }
 
   /* ---------------------------------------------------------------------
+     Before/after reveal: clip-path wipe on the "Результат" section,
+     triggered once the demo block scrolls into view. The animation
+     itself is pure CSS (.reveal-after / .reveal-sheen / .reveal-edge in
+     styles.css) driven by the .is-revealed class toggled here; the
+     global prefers-reduced-motion rule crushes the transition duration
+     to ~0, so under reduced motion it snaps straight to the revealed
+     state instead of wiping. Unobserves after the first trigger so the
+     "wow" moment stays a one-time reveal rather than replaying on every
+     scroll pass.
+     --------------------------------------------------------------------- */
+  var revealDemo = document.getElementById("revealDemo");
+  if (revealDemo) {
+    if ("IntersectionObserver" in window) {
+      var revealObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            revealDemo.classList.add("is-revealed");
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.45 });
+      revealObserver.observe(revealDemo);
+    } else {
+      revealDemo.classList.add("is-revealed");
+    }
+  }
+
+  /* ---------------------------------------------------------------------
      Mobile navigation toggle
      --------------------------------------------------------------------- */
   var navToggle = document.getElementById("navToggle");
